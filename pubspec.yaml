@@ -39,9 +39,10 @@ dependencies:
   pdf: ^3.10.4
   share_plus: any
   path_provider: any
-  open_file: any
   printing: any
   file_picker: any
+  open_file: any
+  permission_handler: ^11.0.0
 
   provider: any
 

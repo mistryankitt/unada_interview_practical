@@ -18,33 +18,68 @@ class _MyExpansionTileState extends State<MyExpansionTile> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        if (_isExpanded == true) Container(),
+        if (_isExpanded == false)
+          Column(
             children: [
-              Text(
-                widget.title,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    widget.title,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    icon: Icon(_isExpanded ? Icons.remove : Icons.add),
+                    onPressed: () {
+                      setState(() {
+                        _isExpanded = !_isExpanded;
+                      });
+                    },
+                  ),
+                ],
               ),
-              IconButton(
-                icon: Icon(_isExpanded ? Icons.remove : Icons.add),
-                onPressed: () {
-                  setState(() {
-                    _isExpanded = !_isExpanded;
-                  });
-                },
-              ),
+              Divider()
+
             ],
           ),
-        ),
         if (_isExpanded)
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: widget.content,
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.green.withOpacity(0.3), width: 2),
+              borderRadius: BorderRadius.circular(10)
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.title,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                        icon: Icon(_isExpanded ? Icons.remove : Icons.add),
+                        onPressed: () {
+                          setState(() {
+                            _isExpanded = !_isExpanded;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                widget.content,
+              ],
+            ),
           ),
       ],
     );
   }
 }
+
+

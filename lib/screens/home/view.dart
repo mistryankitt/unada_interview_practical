@@ -1,16 +1,10 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:unada_interview/model/list_model.dart';
 import 'package:unada_interview/service/api_service.dart';
 import 'package:unada_interview/widgets/my_expansion_tile_widget.dart';
 
 import 'provider.dart';
-import 'dart:io' show Platform, Process;
-
-import 'package:share_plus/share_plus.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -95,7 +89,7 @@ class HomePage extends StatelessWidget {
                     return Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Container(
-                        padding: EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                             color: Colors.grey.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(10)),
@@ -110,20 +104,22 @@ class HomePage extends StatelessWidget {
                                     Text(
                                       "Summary ",
                                       style: TextStyle(
-                                          fontWeight: FontWeight.w600),
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 15),
                                     ),
                                     Text(
                                       "Of Doctor",
                                       style: TextStyle(
                                           fontWeight: FontWeight.w600,
+                                          fontSize: 15,
                                           color: Colors.green),
                                     ),
                                   ],
                                 ),
                                 IconButton(
                                     onPressed: () async {
-                                      provider.sharePdf(snapshot.data?.toJson());
-                                      // provider.printDoc();
+                                      provider
+                                          .sharePdf(snapshot.data?.toJson());
                                     },
                                     icon: const Icon(
                                       Icons.share,
@@ -133,81 +129,109 @@ class HomePage extends StatelessWidget {
                             ),
                             ListView(
                               shrinkWrap: true,
+                              padding: EdgeInsets.zero,
                               physics: const NeverScrollableScrollPhysics(),
                               children: data!.keys.map((key) {
                                 final value = data[key];
                                 // print(value);
-                                if (key == "patientDetails" ||
-                                    key == "emergencyContact" ||
-                                    key == "latestSymptoms" ||
-                                    key == "familyHistory" ||
-                                    key == "dietAndNutritions" ||
-                                    key == "lifestyle" ||
+                                if( key == "familyHistory" ||
                                     key == "treatments" ||
                                     key == "hospitalizations" ||
-                                    key == "insurancePolicies" ||
+                                    key == "insurancePolicies"){}
+                                if (key == "latestSymptoms") {
+                                  return MyExpansionTile(
+                                      title: data["latestSymptoms"][0]["header"],
+                                      content: ListView.builder(
+                                          itemCount: data["latestSymptoms"].length,
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          itemBuilder: (context, index) {
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 8.0),
+                                              child: Container(
+                                                child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: Text(
+                                                            '${value[index]["symptomId"]} :',
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        16),
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        Expanded(
+                                                          child: Text(
+                                                            '${value[index]["symptomName"]}',
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        16),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )),
+                                              ),
+                                            );
+                                          }));
+                                }
+                                if (key == "patientDetails" ||
+                                    key == "emergencyContact" ||
+                                    key == "dietAndNutritions" ||
+                                    key == "lifestyle" ||
                                     key == "advancehistoryList") {
                                   return MyExpansionTile(
                                       title: data[key][0]["header"],
                                       content: ListView.builder(
                                           itemCount: value.length,
+                                          padding: EdgeInsets.zero,
                                           shrinkWrap: true,
                                           physics:
                                               const NeverScrollableScrollPhysics(),
                                           itemBuilder: (context, index) {
-                                            final similarDataKeysList =
-                                                value[index].keys.toList();
                                             return Padding(
                                               padding: const EdgeInsets.only(
                                                   bottom: 8.0),
                                               child: Container(
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                    border: Border.all(
-                                                        color: Colors.green
-                                                            .withOpacity(0.2),
-                                                        width: 2)),
                                                 child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: List<Widget>.from(
-                                                      similarDataKeysList.map(
-                                                          (similarDataKeysListKey) {
-                                                        return Row(
-                                                          children: [
-                                                            Expanded(
-                                                              child: Text(
-                                                                '$similarDataKeysListKey :',
-                                                                style:
-                                                                    const TextStyle(
-                                                                        fontSize:
-                                                                            16),
-                                                              ),
-                                                            ),
-                                                            SizedBox(
-                                                              width: 10,
-                                                            ),
-                                                            Expanded(
-                                                              child: Text(
-                                                                '${value[index][similarDataKeysListKey]}',
-                                                                style:
-                                                                    const TextStyle(
-                                                                        fontSize:
-                                                                            16),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        );
-                                                      }).toList(),
-                                                    ),
-                                                  ),
-                                                ),
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: Text(
+                                                            '${value[index]["question"]} :',
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        16),
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        Expanded(
+                                                          child: Text(
+                                                            '${value[index]["answer"]}',
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        16),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )),
                                               ),
                                             );
                                           }));
@@ -228,45 +252,31 @@ class HomePage extends StatelessWidget {
                                                 width: 2)),
                                         child: Padding(
                                           padding: const EdgeInsets.all(8.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: List<Widget>.from(
-                                              lm.map((lmKey) {
-                                                return Row(
+                                          child:
+
+                                                 Row(
                                                   children: [
                                                     Expanded(
                                                       child: Text(
-                                                        '$lmKey :',
+                                                        '${value["doctorName"]} :',
                                                         style: const TextStyle(
                                                             fontSize: 16),
                                                       ),
                                                     ),
-                                                    SizedBox(
+                                                    const SizedBox(
                                                       width: 10,
                                                     ),
                                                     Expanded(
                                                       child: Text(
-                                                        '${value[lmKey]}',
+                                                        '${value["medicineNames"]}',
                                                         style: const TextStyle(
                                                             fontSize: 16),
                                                       ),
                                                     ),
                                                   ],
-                                                );
+                                                )
 
-                                                return Row(
-                                                  children: [
-                                                    Text(
-                                                      '$lmKey : ${value[lmKey]}',
-                                                      style: const TextStyle(
-                                                          fontSize: 16),
-                                                    ),
-                                                  ],
-                                                );
-                                              }).toList(),
-                                            ),
-                                          ),
+
                                         ),
                                       ));
                                 } else {
@@ -279,46 +289,6 @@ class HomePage extends StatelessWidget {
                       ),
                     );
                   }
-
-                  // return Padding(
-                  //   padding: const EdgeInsets.all(8.0),
-                  //   child: Container(
-                  //     decoration: BoxDecoration(
-                  //         color: Colors.grey.withOpacity(0.2),
-                  //         borderRadius: BorderRadius.circular(10)),
-                  //     child: ListView.builder(
-                  //         itemCount: snap.data!.length,
-                  //         shrinkWrap: true,
-                  //         physics: const NeverScrollableScrollPhysics(),
-                  //         itemBuilder: (context, index) {
-                  //           if (snap.data![index] == "patientDetails" || snap
-                  //               .data![index] == "emergencyContact") {
-                  //             return Container();
-                  //           }
-                  //           return Column(
-                  //             children: [
-                  //               Padding(
-                  //                 padding: const EdgeInsets.all(8.0),
-                  //                 child: Row(
-                  //                   mainAxisAlignment:
-                  //                   MainAxisAlignment.spaceBetween,
-                  //                   children: [
-                  //                     Text(
-                  //                       "${snap.data?[index]}",
-                  //                       style: const TextStyle(
-                  //                           fontWeight: FontWeight.bold),
-                  //                     ),
-                  //                     IconButton(
-                  //                         onPressed: () {},
-                  //                         icon: const Icon(Icons.add)),
-                  //                   ],
-                  //                 ),
-                  //               )
-                  //             ],
-                  //           );
-                  //         }),
-                  //   ),
-                  // );
                 }),
           )
         ],
