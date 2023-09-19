@@ -114,12 +114,4 @@ class HomeProvider extends ChangeNotifier {
     }
   }
 
-  Future<File?> pickFile() async {
-    final picker = FilePicker.platform.pickFiles(allowMultiple: false);
-    var pickedFile;
-    await picker.then((value) {
-      pickedFile = value!.files.first;
-    });
-    return pickedFile;
-  }
 }
